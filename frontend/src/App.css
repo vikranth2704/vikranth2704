@@ -1,0 +1,38 @@
+body {
+  font-family: Arial;
+  background: #f4f4f4;
+}
+
+.container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: 250px;
+  margin: auto;
+}
+
+.form input {
+  margin: 10px 0;
+  padding: 10px;
+}
+
+button {
+  padding: 8px 15px;
+  margin: 10px;
+  cursor: pointer;
+}
+
+.ticket {
+  background: white;
+  padding: 20px;
+  width: 300px;
+  margin: auto;
+}
+
+.ticket img {
+  width: 200px;
+}
