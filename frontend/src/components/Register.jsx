@@ -3,11 +3,11 @@ import { useState } from "react";
 function Register({ setTicket }) {
   const [name, setName] = useState("");
   const [event, setEvent] = useState("");
-
+  const [qr,setQr] =useState("");
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/register", {
+    const res = await fetch("https://event-ticket-generaion-web-portal.onrender.com/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
