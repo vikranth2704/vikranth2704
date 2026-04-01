@@ -7,7 +7,7 @@ function Register({ setTicket }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("https://event-ticket-generaion-web-portal.onrender.com/register", {
+    const res = await fetch("https://vikranth2704.onrender.com/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
