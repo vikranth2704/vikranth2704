@@ -1,3 +1,14 @@
+{
+  "name": "event-frontend",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "chart.js": "^4.4.0",
+    "react-chartjs-2": "^5.2.0",
+    "xlsx": "^0.18.5",
+    "file-saver": "^2.0.5"
+  }
+}
 "scripts": {
   "dev": "vite",
   "build": "vite build",
