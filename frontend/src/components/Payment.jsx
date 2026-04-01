@@ -24,7 +24,7 @@ function Payment({ name, event, setTicket }) {
     }
 
     // Create order from backend
-    const orderRes = await fetch("https://event-ticket-generaion-web-portal.onrender.com/payment/create-order", {
+    const orderRes = await fetch("https://vikranth2704.onrender.com/payment/create-order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +44,7 @@ function Payment({ name, event, setTicket }) {
 
       handler: async function (response) {
         // After payment success → register user
-        const registerRes = await fetch("https://event-ticket-generaion-web-portal.onrender.com/payment/register", {
+        const registerRes = await fetch("https://vikranth2704.onrender.com/payment/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
