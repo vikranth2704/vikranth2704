@@ -1,28 +1,20 @@
 import { useState } from "react";
 import Register from "./components/Register";
-import Ticket from "./components/Ticket";
-import AdminDashboard from "./components/AdminDashboard";
+import Admin from "./components/Admin";
 
 function App() {
-  const [ticket, setTicket] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
   return (
-    <div className="container">
-      <h1>🎟️ Event Platform</h1>
+    <div style={{ textAlign: "center" }}>
+      <h1>Event Platform</h1>
 
-      <div>
-        <button onClick={() => setIsAdmin(false)}>User</button>
-        <button onClick={() => setIsAdmin(true)}>Admin</button>
-      </div>
+      <button onClick={() => setIsAdmin(false)}>User</button>
+      <button onClick={() => setIsAdmin(true)}>Admin</button>
 
-      {isAdmin ? (
-        <AdminDashboard />
-      ) : !ticket ? (
-        <Register setTicket={setTicket} />
-      ) : (
-        <Ticket ticket={ticket} />
-      )}
+      <hr />
+
+      {isAdmin ? <Admin /> : <Register />}
     </div>
   );
 }
