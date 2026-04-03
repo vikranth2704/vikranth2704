@@ -5,7 +5,7 @@ function Register({ setTicket }) {
   const [event, setEvent] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const API_URL = "https://vikranth2704.onrender.com";
+  const API_URL = "https://vikranth2704-2.onrender.com";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
