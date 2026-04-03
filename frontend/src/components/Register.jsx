@@ -1,76 +1,62 @@
 import { useState } from "react";
+import API_URL from "../api";
 
-function Register({ setTicket }) {
+function Register() {
   const [name, setName] = useState("");
   const [event, setEvent] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [qr, setQr] = useState("");
 
-  const API_URL = "https://vikranth2704-2.onrender.com";
+  // load Razorpay script
+  const loadScript = () =>
+    new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handlePayment = async () => {
     if (!name || !event) {
-      alert("Please fill all fields");
+      alert("Enter name and event");
       return;
     }
 
-    setLoading(true);
-
-    try {
-      const res = await fetch(`${API_URL}/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          event,
-          payment_id: "TEST123" // 🔥 required for backend
-        }),
-      });
-
-      if (!res.ok) {
-        throw new Error("Server error");
-      }
-
-      const data = await res.json();
-
-      setTicket({
-        name,
-        event,
-        qr: data.qrCode,
-      });
-
-    } catch (error) {
-      console.error(error);
-      alert("Registration failed");
+    const ok = await loadScript();
+    if (!ok) {
+      alert("Razorpay SDK failed to load");
+      return;
     }
 
-    setLoading(false);
-  };
+    // create order from backend
+    const orderRes = await fetch(`${API_URL}/payment/create-order`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: 500 }), // ₹500
+    });
 
-  return (
-    <form onSubmit={handleSubmit} className="form">
-      <input
-        type="text"
-        placeholder="Enter Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+    const order = await orderRes.json();
 
-      <input
-        type="text"
-        placeholder="Enter Event"
-        value={event}
-        onChange={(e) => setEvent(e.target.value)}
-      />
+    const options = {
+      key: "rzp_test_xxxxx", // 🔁 replace with your Key ID (ONLY this, not secret)
+      amount: order.amount,
+      currency: "INR",
+      order_id: order.id,
+      name: "Event Registration",
+      description: event,
 
-      <button type="submit">
-        {loading ? "Processing..." : "Register"}
-      </button>
-    </form>
-  );
-}
+      handler: async function (response) {
+        // after successful payment → register user
+        const res = await fetch(`${API_URL}/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            event,
+            payment_id: response.razorpay_payment_id,
+          }),
+        });
 
-export default Register;
+        const data = await res.json();
+        setQr(data.qrCode);
+      },
