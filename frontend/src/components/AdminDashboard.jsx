@@ -14,17 +14,30 @@ ChartJS.register(BarElement, CategoryScale, LinearScale);
 
 function AdminDashboard() {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const API_URL = "https://event-ticket-generaion-web-portal.onrender.com";
 
   useEffect(() => {
-    fetch("https://event-ticket-generaion-web-portal.onrender.com/users")
-      .then((res) => res.json())
-      .then((data) => setUsers(data));
+    fetch(`${API_URL}/users`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch data");
+        return res.json();
+      })
+      .then((data) => setUsers(data))
+      .catch((err) => {
+        console.error(err);
+        alert("Error fetching users");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  // 📊 Chart Data
+  // 📊 Chart Data (safe)
   const eventCounts = {};
   users.forEach((u) => {
-    eventCounts[u.event] = (eventCounts[u.event] || 0) + 1;
+    if (u.event) {
+      eventCounts[u.event] = (eventCounts[u.event] || 0) + 1;
+    }
   });
 
   const chartData = {
@@ -37,16 +50,21 @@ function AdminDashboard() {
     ],
   };
 
-  // 📁 Export Excel
+  // 📁 Export Excel (formatted)
   const exportToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(users);
+    const formattedData = users.map((u) => ({
+      Name: u.name,
+      Event: u.event,
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(formattedData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Users");
 
     const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     const file = new Blob([buf], { type: "application/octet-stream" });
 
-    saveAs(file, "users.xlsx");
+    saveAs(file, "event_users.xlsx");
   };
 
   return (
@@ -55,26 +73,32 @@ function AdminDashboard() {
 
       <button onClick={exportToExcel}>📁 Export Excel</button>
 
-      <div style={{ width: "400px", margin: "auto" }}>
-        <Bar data={chartData} />
-      </div>
+      {loading ? (
+        <p>Loading data...</p>
+      ) : (
+        <>
+          <div style={{ width: "400px", margin: "auto" }}>
+            <Bar data={chartData} />
+          </div>
 
-      <table border="1" style={{ margin: "20px auto" }}>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Event</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u, i) => (
-            <tr key={i}>
-              <td>{u.name}</td>
-              <td>{u.event}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          <table border="1" style={{ margin: "20px auto" }}>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Event</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((u) => (
+                <tr key={u.id || u.payment_id}>
+                  <td>{u.name}</td>
+                  <td>{u.event}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
     </div>
   );
 }
