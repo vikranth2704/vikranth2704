@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Register from "./components/Register";
-import Admin from "./components/Admin";
+import Admin from "./components/Admin";   // ✅ MUST MATCH FILE NAME
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(false);
