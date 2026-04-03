@@ -3,7 +3,7 @@ import { useState } from "react";
 function Payment({ name, event, setTicket }) {
   const [loading, setLoading] = useState(false);
 
-  const API_URL = "https://vikranth2704.onrender.com";
+  const API_URL = "https://vikranth2704-2.onrender.com";
 
   // Load Razorpay script
   const loadRazorpay = () => {
