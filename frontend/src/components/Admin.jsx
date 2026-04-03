@@ -8,7 +8,7 @@ function Admin() {
     fetch(`${API_URL}/register`)
       .then((res) => res.json())
       .then((data) => setUsers(data))
-      .catch(console.error);
+      .catch((err) => console.log(err));
   }, []);
 
   return (
