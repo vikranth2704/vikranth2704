@@ -3,6 +3,9 @@ import { useState } from "react";
 function Payment({ name, event, setTicket }) {
   const [loading, setLoading] = useState(false);
 
+  const API_URL = "https://vikranth2704.onrender.com";
+
+  // Load Razorpay script
   const loadRazorpay = () => {
     return new Promise((resolve) => {
       const script = document.createElement("script");
@@ -14,70 +17,99 @@ function Payment({ name, event, setTicket }) {
   };
 
   const handlePayment = async () => {
-    setLoading(true);
-
-    const res = await loadRazorpay();
-
-    if (!res) {
-      alert("Razorpay SDK failed");
+    if (!name || !event) {
+      alert("Please enter name and event");
       return;
     }
 
-    // Create order from backend
-    const orderRes = await fetch("https://vikranth2704.onrender.com/payment/create-order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ amount: 500 }),
-    });
+    setLoading(true);
 
-    const order = await orderRes.json();
+    try {
+      const loaded = await loadRazorpay();
 
-    const options = {
-      key: "YOUR_KEY_ID",
-      amount: order.amount,
-      currency: "INR",
-      name: "Event Booking",
-      description: event,
-      order_id: order.id,
+      if (!loaded) {
+        alert("Razorpay SDK failed to load");
+        setLoading(false);
+        return;
+      }
 
-      handler: async function (response) {
-        // After payment success → register user
-        const registerRes = await fetch("https://vikranth2704.onrender.com/payment/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            event,
-            payment_id: response.razorpay_payment_id,
-          }),
-        });
+      // Step 1: Create order
+      const orderRes = await fetch(`${API_URL}/payment/create-order`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount: 500 }),
+      });
 
-        const data = await registerRes.json();
+      if (!orderRes.ok) {
+        throw new Error("Failed to create order");
+      }
 
-        setTicket({
-          name,
-          event,
-          qr: data.qrCode,
-        });
-      },
+      const order = await orderRes.json();
 
-      prefill: {
-        name: name,
-      },
+      // Step 2: Razorpay options
+      const options = {
+        key: "rzp_test_xxxxxxxx", // 🔥 PUT YOUR RAZORPAY KEY HERE
+        amount: order.amount,
+        currency: "INR",
+        name: "Event Booking",
+        description: event,
+        order_id: order.id,
 
-      theme: {
-        color: "#3399cc",
-      },
-    };
+        handler: async function (response) {
+          try {
+            // Step 3: Register user after payment
+            const registerRes = await fetch(`${API_URL}/register`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                name,
+                event,
+                payment_id: response.razorpay_payment_id,
+              }),
+            });
 
-    const paymentObject = new window.Razorpay(options);
-    paymentObject.open();
+            if (!registerRes.ok) {
+              throw new Error("Registration failed");
+            }
 
-    setLoading(false);
+            const data = await registerRes.json();
+
+            setTicket({
+              name,
+              event,
+              qr: data.qrCode,
+            });
+
+          } catch (err) {
+            console.error(err);
+            alert("Registration failed");
+          }
+
+          setLoading(false);
+        },
+
+        prefill: {
+          name: name,
+        },
+
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      // Step 4: Open payment window
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+
+    } catch (error) {
+      console.error(error);
+      alert("Payment failed");
+      setLoading(false);
+    }
   };
 
   return (
