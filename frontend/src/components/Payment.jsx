@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 
 function Payment({ name, event, setTicket }) {
   const [loading, setLoading] = useState(false);
