@@ -30,7 +30,7 @@ function Register({ setTicket }) {
         }),
       });
 
-      if (!res.ok) throw new Error("Error");
+      if (!res.ok) throw new Error("Failed");
 
       const data = await res.json();
 
@@ -40,8 +40,8 @@ function Register({ setTicket }) {
         qr: data.qrCode,
       });
 
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       alert("Registration failed");
     }
 
