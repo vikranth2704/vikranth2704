@@ -16,7 +16,7 @@ function Admin() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = "https://event-ticket-generaion-web-portal.onrender.com";
+  const API_URL = "https://vikranth2704-2.onrender.com";
 
   // Fetch users
   useEffect(() => {
