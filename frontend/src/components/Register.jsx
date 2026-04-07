@@ -30,7 +30,7 @@ function Register({ setTicket }) {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) throw new Error("Error");
 
       const data = await res.json();
 
@@ -40,8 +40,8 @@ function Register({ setTicket }) {
         qr: data.qrCode,
       });
 
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       alert("Registration failed");
     }
 
@@ -49,16 +49,14 @@ function Register({ setTicket }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="form">
+    <form onSubmit={handleSubmit}>
       <input
-        type="text"
         placeholder="Enter Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
 
       <input
-        type="text"
         placeholder="Enter Event"
         value={event}
         onChange={(e) => setEvent(e.target.value)}
