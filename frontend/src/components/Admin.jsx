@@ -32,9 +32,3 @@ function Admin() {
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
-  );
-}
-
-export default Admin;
